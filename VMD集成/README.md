@@ -6,7 +6,7 @@
 
     git clone https://github.com/OSC/bc_osc_vmd.git
     
-修改submit.yml.erb ，form.yml ，template/script.yml.erb
+修改submit.yml.erb ，form.yml ，template
 
 ## 问题
 
