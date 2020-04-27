@@ -1,5 +1,5 @@
-
-## 工作进展：
+# PCP监控信息工作进展
+## 工作进展
 修改pmdasimple.python中的simple_timenow_check函数，为simple.now添加监控信息，包括memory load，每个cpu的温度，
 整机功耗和风扇转速（固定为3600）。
 使用方法：
