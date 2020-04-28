@@ -54,5 +54,6 @@ lm_sensors 中的sensors可以获取每个cpu的温度信息:
 Stress Terminal UI(s-tui)可以在Linux终端中监控CPU温度，利用率，功耗等信息。运行方法：
 
      s-tui
-
+     
+![avater](pcp1.png)
 ## 问题
