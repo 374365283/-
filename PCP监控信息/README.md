@@ -1,6 +1,6 @@
 # PCP监控信息 工作进展
 
-## 工作进展
+## 将监控信息加入到PCP中
 
 修改pmdasimple.python中的simple_timenow_check函数，为simple.now添加监控信息，包括memory load，每个cpu的温度，
 整机功耗和风扇转速（固定为3600）。
@@ -8,7 +8,7 @@
 
      pmval simple.now
      
-整理能够查看温度和转速的程序，准备在集群上部署。
+## 整理能够查看温度和转速的程序，准备在集群上部署。
 
 使用psutil可以获得每个cpu核心的当前温度，最高温度和临界温度,返回的是一个json类型，以及每个风扇的实时转速，返回的是一个list类型。
 
