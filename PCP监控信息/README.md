@@ -9,8 +9,12 @@
      pmval simple.now
      
 整理能够查看温度和转速的程序，准备在集群上部署。
-psutil.sensors_temperatures() 可以获得每个cpu核心的当前温度，最高温度和临界温度,返回的是一个json类型。
-psutil.sensors_fans()可以获得每个风扇的实时转速，返回的是一个list类型。
+
+使用psutil可以获得每个cpu核心的当前温度，最高温度和临界温度,返回的是一个json类型，以及每个风扇的实时转速，返回的是一个list类型。
+
+     psutil.sensors_temperatures() 
+     psutil.sensors_fans()
+     
 lm_sensors 中的sensors可以获取每个cpu的温度信息:
 
      sensors
