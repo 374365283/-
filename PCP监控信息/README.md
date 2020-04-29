@@ -50,16 +50,16 @@ Stress Terminal UI(s-tui)可以在Linux终端中监控CPU温度，利用率，�
 
 ![avater](pcp1.png)
 ## 将监控信息加入到PCP中
+     
+用psutil.sensors_temperatures() 和psutil.virtual_memory().percent获取cpu温度和memory load，fan speed固定为3600，用s-tui来获取整机功率：
+
+     var = os.popen("s-tui -j | jq -c '.Power'").read()
 
 修改pmdasimple.python中的simple_timenow_check函数，为simple.now添加监控信息，包括memory load，每个cpu的温度，
 整机功耗和风扇转速（固定为3600）。
 使用方法：
 
      pmval simple.now
-     
-用psutil.sensors_temperatures() 和psutil.virtual_memory().percent获取cpu温度和memory load，fan speed固定为3600，用s-tui来获取整机功率：
-
-     var = os.popen("s-tui -j | jq -c '.Power'").read()
      
 
 ## 问题
