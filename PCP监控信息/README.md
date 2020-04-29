@@ -1,12 +1,5 @@
 # PCP监控信息 工作进展
 
-## 将监控信息加入到PCP中
-
-修改pmdasimple.python中的simple_timenow_check函数，为simple.now添加监控信息，包括memory load，每个cpu的温度，
-整机功耗和风扇转速（固定为3600）。
-使用方法：
-
-     pmval simple.now
      
 ## 整理能够查看温度和转速的程序，准备在集群上部署。
 
@@ -54,6 +47,16 @@ lm_sensors 中的sensors可以获取每个cpu的温度信息:
 Stress Terminal UI(s-tui)可以在Linux终端中监控CPU温度，利用率，功耗等信息。运行方法：
 
      s-tui
+
+## 将监控信息加入到PCP中
+
+修改pmdasimple.python中的simple_timenow_check函数，为simple.now添加监控信息，包括memory load，每个cpu的温度，
+整机功耗和风扇转速（固定为3600）。
+使用方法：
+
+     pmval simple.now
+     
+用psutil.sensors_temperatures() 和psutil.virtual_memory().percent获取cpu温度和memory load，fan speed固定为3600，用s-tui来获取整机功率。
      
 ![avater](pcp1.png)
 ## 问题
