@@ -10,4 +10,6 @@
 
 ## 问题
 
-使用VMD launch，打开可视化界面后，无法连上服务器。可能的解决方法：目前根据文档https://osc.github.io/ood-documentation/release-1.6/enable-desktops/software-requirements.html 参考desktop的部署方式，来部署VMD,参考jupyter/template/script.sh.erb中环境变量的部署方法。
+4.28 使用VMD launch，打开可视化界面后，无法连上服务器。可能的解决方法：目前根据文档https://osc.github.io/ood-documentation/release-1.6/enable-desktops/software-requirements.html 参考desktop的部署方式，来部署VMD,参考jupyter/template/script.sh.erb中环境变量的部署方法。
+
+5.1 VMD打开后，进入了xfce的远程桌面，但没有显示vmd的可视化界面。
