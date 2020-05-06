@@ -57,7 +57,7 @@ Stress Terminal UI(s-tui)可以在Linux终端中监控CPU温度，利用率，�
      var = os.popen("s-tui -j | jq -c '.Power'").read()
      var = json.loads(var)
      for elem in var:
-     power_consumption += float(var[elem])
+          power_consumption += float(var[elem])
 
 修改pmdasimple.python中的simple_timenow_check函数，为simple.cputemperature，simple.fanspeed和simple.power添加监控信息，包括每个cpu的温度，
 整机功耗和风扇转速（固定为3600。
