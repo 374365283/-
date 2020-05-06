@@ -45,8 +45,9 @@ class SimplePMDA(PMDA):
               pmdaInstid(1, 'green'),
               pmdaInstid(2, 'blue')]
 
-    # simple.now instance domain
+    # simple.cputemperature instance domain
     configfile = ''
+
     timeslices = {}
     times = ()
 
@@ -54,7 +55,8 @@ class SimplePMDA(PMDA):
     numfetch = 0
     oldfetch = -1
 
-
+    powers = {}
+    fan_speed = {}
     def simple_instance(self, serial):
         ''' Called once per "instance request" PDU '''
         # self.log("instance update for %d" % serial)
@@ -118,6 +120,19 @@ class SimplePMDA(PMDA):
                 return [c_api.PM_ERR_INST, 0]
             valuep = cast(voidp, POINTER(c_int))
             return [valuep.contents.value, 1]
+        elif (item == 5):
+            voidp = self.inst_lookup(self.power_indom, inst)
+            if (voidp == None):
+                return [c_api.PM_ERR_INST, 0]
+            valuep = cast(voidp, POINTER(c_int))
+            return [valuep.contents.value, 1]
+        else:
+            voidp = self.inst_lookup(self.fanspeed_indom, inst)
+            if (voidp == None):
+                return [c_api.PM_ERR_INST, 0]
+            valuep = cast(voidp, POINTER(c_int))
+            return [valuep.contents.value, 1]
+
         return [c_api.PM_ERR_PMID, 0]
 
     def simple_fetch_callback(self, cluster, item, inst):
@@ -177,7 +192,7 @@ class SimplePMDA(PMDA):
             else:
                 return c_api.PM_ERR_PMID
         elif ((cluster == 1 and (item == 2 or item == 3))
-            or (cluster == 2 and item == 4)):
+            or (cluster == 2 and (item >= 4))):
             return c_api.PM_ERR_PERMISSION
         return c_api.PM_ERR_PMID
 
@@ -199,8 +214,8 @@ class SimplePMDA(PMDA):
             var = json.loads(var)
             for elem in var:
                 power_consumption += float(var[elem])
-            self.timeslices['fan_speed'] = c_int(int(fan_speed))
-            self.timeslices['power'] = c_int(int(power_consumption))
+            self.fan_speed['fan_speed'] = c_int(int(fan_speed))
+            self.powers['power'] = c_int(int(power_consumption))
             for elem in psutil.sensors_temperatures()['coretemp']:
                  key = elem.label
                  if key[0] == 'P':
@@ -219,7 +234,8 @@ class SimplePMDA(PMDA):
         finally:
             cfg.close()
         self.replace_indom(self.now_indom, self.timeslices)
-
+        self.replace_indom(self.power_indom, self.powers)
+        self.replace_indom(self.fanspeed_indom, self.fan_speed)
 
     def simple_label(self, ident, type):
         '''
@@ -233,6 +249,8 @@ class SimplePMDA(PMDA):
                 ret = '"indom_name":"color","model":"RGB"'
             elif indom == self.now_indom:
                 ret = '"indom_name":"time","unitsystem":"SI"'
+            else:
+                ret = '"indom_name":"fanspeed","model":"RGB"'
         else: # no labels added for types PM_LABEL_CLUSTER, PM_LABEL_ITEM
             ret = '' # default is an empty labelset string
 
@@ -264,7 +282,14 @@ class SimplePMDA(PMDA):
 
         self.now_indom = self.indom(1)
         self.add_indom(pmdaIndom(self.now_indom, self.timeslices))
-
+        
+        self.power_indom = self.indom(2)
+        self.add_indom(pmdaIndom(self.power_indom, self.powers))
+        
+        self.fanspeed_indom = self.indom(3)
+        self.add_indom(pmdaIndom(self.fanspeed_indom, self.fan_speed))
+        
+      
         self.add_metric(name + '.numfetch', pmdaMetric(self.pmid(0, 0),
                 c_api.PM_TYPE_U32, c_api.PM_INDOM_NULL, c_api.PM_SEM_INSTANT,
                 pmUnits(0, 0, 0, 0, 0, 0)))
@@ -277,10 +302,18 @@ class SimplePMDA(PMDA):
         self.add_metric(name + '.time.sys', pmdaMetric(self.pmid(1, 3),
                 c_api.PM_TYPE_DOUBLE, c_api.PM_INDOM_NULL, c_api.PM_SEM_COUNTER,
                 pmUnits(0, 1, 0, 0, c_api.PM_TIME_SEC, 0)))
-        self.add_metric(name + '.now', pmdaMetric(self.pmid(2, 4),
+        self.add_metric(name + '.cputemperature', pmdaMetric(self.pmid(2, 4),
                 c_api.PM_TYPE_U32, self.now_indom, c_api.PM_SEM_INSTANT,
                 pmUnits(0, 0, 0, 0, 0, 0)))
+        self.add_metric(name + '.powerconsumption', pmdaMetric(self.pmid(2, 5),
+                c_api.PM_TYPE_U32, self.power_indom, c_api.PM_SEM_INSTANT,
+                pmUnits(0, 0, 0, 0, 0, 0)))
+        self.add_metric(name + '.fanspeed', pmdaMetric(self.pmid(2, 6),
+                c_api.PM_TYPE_U32, self.fanspeed_indom, c_api.PM_SEM_INSTANT,
+                pmUnits(0, 0, 0, 0, 0, 0)))       
 
+
+ 
         self.set_fetch(self.simple_fetch)
         self.set_instance(self.simple_instance)
         self.set_fetch_callback(self.simple_fetch_callback)
