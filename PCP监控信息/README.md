@@ -61,6 +61,18 @@ Stress Terminal UI(s-tui)可以在Linux终端中监控CPU温度，利用率，�
 
 修改pmdasimple.python中的simple_timenow_check函数，为simple.cputemperature，simple.fanspeed和simple.power添加监控信息，包括每个cpu的温度，
 整机功耗和风扇转速（固定为3600）。
+在__init__函数中加入三个监控信息：
+
+     self.add_metric(name + '.cputemperature', pmdaMetric(self.pmid(2, 4),
+                c_api.PM_TYPE_U32, self.now_indom, c_api.PM_SEM_INSTANT,
+                pmUnits(0, 0, 0, 0, 0, 0)))
+     self.add_metric(name + '.powerconsumption', pmdaMetric(self.pmid(2, 5),
+                c_api.PM_TYPE_U32, self.power_indom, c_api.PM_SEM_INSTANT,
+                pmUnits(0, 0, 0, 0, 0, 0)))
+     self.add_metric(name + '.fanspeed', pmdaMetric(self.pmid(2, 6),
+                c_api.PM_TYPE_U32, self.fanspeed_indom, c_api.PM_SEM_INSTANT,
+                pmUnits(0, 0, 0, 0, 0, 0)))    
+                
 同时修改pmns.save，修改监控信息的名字：
 
      simple {
