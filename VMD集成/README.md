@@ -67,7 +67,7 @@ VMD界面：
 
 5.1 VMD打开后，进入了xfce的远程桌面，但没有显示vmd的可视化界面。
 
-5.17在vmd的集成中，我使用singularity的vmd镜像来启动vmd，但是目前只能先打开xfce然后再手动输入启动vmd的命令。解决方法：使用xfce4-terminal让xfce在打开时自动执行启动vmd的命令。
+5.17在vmd的集成中，我使用singularity的vmd镜像来启动vmd，但是目前只能先打开xfce然后再手动输入启动vmd的命令。解决方法：使用xfce4-terminal让xfce在打开时自动执行启动vmd的命令。参考文档：http://manpages.ubuntu.com/manpages/xenial/zh_CN/man1/xfce4-terminal.1.html
 
 
    
