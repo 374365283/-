@@ -56,8 +56,10 @@
 修改template/script.sh.erb,加入语句：
 
     xfce4-terminal -e "singularity run /lustre/share/img/vmd.simg vmd" -T "VMD Terminal" --disable-server
+    
+VMD界面：
 
-
+![avater](vmd0.png)
 
 ## 问题
 
