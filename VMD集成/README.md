@@ -7,6 +7,7 @@
     git clone https://github.com/OSC/bc_osc_vmd.git
     
 修改submit.yml.erb:
+
     ---
     batch_connect:
        template: vnc
@@ -16,6 +17,7 @@
           - "<%= num_cores.blank? ? 1 : num_cores.to_i %>"
 
 修改form.yml:
+
     ---
     cluster: "sjtu"
     form:
