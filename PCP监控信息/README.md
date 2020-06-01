@@ -1,7 +1,7 @@
 # PCP监控信息 工作进展
 
 ## 部署过程：
-首先安装pip，并用pip下载psutil库，s-tui：
+首先安装pip：
 
      export http_proxy=http://proxy.pi.sjtu.edu.cn:3004/
      export https_proxy=http://proxy.pi.sjtu.edu.cn:3004/
@@ -15,6 +15,9 @@
      cd pip-19.0.2
      python setup.py install
      cd ..
+     
+用pip下载psutil库，s-tui：
+     
      yum install gcc python-devel
      pip install psutil s-tui
      
@@ -41,6 +44,7 @@
     
            
 根据附件pmdasimple.python修改pmdasimple.python。
+
 安装过程：
 
        ./Remove
