@@ -14,16 +14,16 @@ Python implementation of the "simple" Performance Metrics Domain Agent.
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-import json
-import psutil
+# 
+
 import os
 import time
 import ctypes
-from ctypes import c_int, POINTER, cast,c_float
+from ctypes import c_int,c_float, POINTER, cast
 import cpmapi as c_api
 from pcp.pmda import PMDA, pmdaMetric, pmdaIndom, pmdaInstid
 from pcp.pmapi import pmUnits, pmContext as PCP
+import psutil,json
 
 class SimplePMDA(PMDA):
     '''
@@ -45,18 +45,18 @@ class SimplePMDA(PMDA):
               pmdaInstid(1, 'green'),
               pmdaInstid(2, 'blue')]
 
-    # simple.cputemperature instance domain
+    # simple.now instance domain
     configfile = ''
-
-    timeslices = {}
+    cputemperature = {}
+    powers = {}
+    fans = {}
     times = ()
 
     # simple.numfetch properties
     numfetch = 0
     oldfetch = -1
 
-    powers = {}
-    fan_speed = {}
+
     def simple_instance(self, serial):
         ''' Called once per "instance request" PDU '''
         # self.log("instance update for %d" % serial)
@@ -192,7 +192,7 @@ class SimplePMDA(PMDA):
             else:
                 return c_api.PM_ERR_PMID
         elif ((cluster == 1 and (item == 2 or item == 3))
-            or (cluster == 2 and (item >= 4))):
+            or (cluster == 2 and item >= 4)):
             return c_api.PM_ERR_PERMISSION
         return c_api.PM_ERR_PMID
 
@@ -201,41 +201,28 @@ class SimplePMDA(PMDA):
         '''
         Read our configuration file and update instance domain
         '''
-        self.timeslices.clear()
+        self.cputemperature.clear()
+        self.powers.clear()
+        self.fans.clear()
         try:
             cfg = open(self.configfile)
-            fields = time.localtime()
-            values = {'memload':c_int(int(psutil.virtual_memory().percent))}
-            id = 'a'
-            self.timeslices['memload'] = c_int(int(psutil.virtual_memory().percent))
-            fan_speed = 3600
-            power_consumption = 0
-            var = os.popen("s-tui -j | jq -c '.Power'").read()
+            var = os.popen("s-tui -j").read()
             var = json.loads(var)
-            for elem in var:
-                power_consumption += float(var[elem])
-            self.fan_speed['fan_speed'] = c_int(int(fan_speed))
-            self.powers['power'] = c_int(int(power_consumption))
-            for elem in psutil.sensors_temperatures()['coretemp']:
-                 key = elem.label
-                 if key[0] == 'P':
-                     key_list = key.split()
-                     id = key_list[-1]
-                 else:
-                     key_list = key.split()
-                     key = key_list[0] + id + '-' + key_list[1]
-                     self.timeslices[key] = c_int(int(elem.current))                   
-#            config = cfg.readline().strip()
-#            for key in config.split(','):
-#                if (key != '' and values[key] != None):
-#                    self.timeslices[key] = values[key]
-#            for key in values.keys():
-#                  self.timeslices[key] = values[key]
+            self.fans['fanspeed'] = c_int(3600)
+            dic_1 = var["Power"]
+            for elem in dic_1:
+                  elem_str = str(elem.replace(' ',''))
+                  self.powers[elem_str] = c_int(int(float(dic_1[elem])))
+            dic_2 = var["Temp"]
+            for elem in dic_2:
+                  elem_str = str(elem.replace(' ',''))
+                  self.cputemperature[elem_str] = c_int(int(float(dic_2[elem])))
         finally:
             cfg.close()
-        self.replace_indom(self.now_indom, self.timeslices)
+        self.replace_indom(self.now_indom, self.cputemperature)
         self.replace_indom(self.power_indom, self.powers)
-        self.replace_indom(self.fanspeed_indom, self.fan_speed)
+        self.replace_indom(self.fanspeed_indom, self.fans)
+
 
     def simple_label(self, ident, type):
         '''
@@ -248,9 +235,11 @@ class SimplePMDA(PMDA):
             if indom == self.color_indom:
                 ret = '"indom_name":"color","model":"RGB"'
             elif indom == self.now_indom:
-                ret = '"indom_name":"time","unitsystem":"SI"'
-            else:
-                ret = '"indom_name":"fanspeed","model":"RGB"'
+                ret = '"indom_name":"cpu temperature","unitsystem":"SI"'
+            elif indom == self.power_indom:
+                ret = '"indom_name":"power consumption","unitsystem":"SI"'
+            elif indom == self.fanspeed_indom:
+                ret = '"indom_name":"fan speed","unitsystem":"SI"'
         else: # no labels added for types PM_LABEL_CLUSTER, PM_LABEL_ITEM
             ret = '' # default is an empty labelset string
 
@@ -281,15 +270,14 @@ class SimplePMDA(PMDA):
         self.add_indom(pmdaIndom(self.color_indom, self.colors))
 
         self.now_indom = self.indom(1)
-        self.add_indom(pmdaIndom(self.now_indom, self.timeslices))
+        self.add_indom(pmdaIndom(self.now_indom, self.cputemperature))
         
-        self.power_indom = self.indom(2)
+        self.fanspeed_indom = self.indom(2)
+        self.add_indom(pmdaIndom(self.fanspeed_indom, self.fans))
+        
+        self.power_indom = self.indom(3)
         self.add_indom(pmdaIndom(self.power_indom, self.powers))
-        
-        self.fanspeed_indom = self.indom(3)
-        self.add_indom(pmdaIndom(self.fanspeed_indom, self.fan_speed))
-        
-      
+
         self.add_metric(name + '.numfetch', pmdaMetric(self.pmid(0, 0),
                 c_api.PM_TYPE_U32, c_api.PM_INDOM_NULL, c_api.PM_SEM_INSTANT,
                 pmUnits(0, 0, 0, 0, 0, 0)))
@@ -310,9 +298,7 @@ class SimplePMDA(PMDA):
                 pmUnits(0, 0, 0, 0, 0, 0)))
         self.add_metric(name + '.fanspeed', pmdaMetric(self.pmid(2, 6),
                 c_api.PM_TYPE_U32, self.fanspeed_indom, c_api.PM_SEM_INSTANT,
-                pmUnits(0, 0, 0, 0, 0, 0)))       
-
-
+                pmUnits(0, 0, 0, 0, 0, 0))) 
  
         self.set_fetch(self.simple_fetch)
         self.set_instance(self.simple_instance)
