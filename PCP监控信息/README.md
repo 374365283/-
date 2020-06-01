@@ -41,4 +41,13 @@
     
            
 根据附件pmdasimple.python修改pmdasimple.python。
+安装过程：
 
+       ./Remove
+       ./Install
+       python
+使用：
+       
+       pmval simple.cputemperature
+       pmval simple.fanspeed
+       pmval simple.powerconsumption
