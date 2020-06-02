@@ -41,12 +41,16 @@
 
             # connect to database
             sudo -u postgres psql -d <databasename>
+            
             # Create the database, let's call it 'tutorial'
             CREATE database tutorial;
+            
             # Connect to the database
             \c tutorial
+            
             # Extend the database with TimescaleDB
             CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+            
             # Connecting to the new database is as simple as:
             psql -U postgres -h localhost -d tutorial
             
