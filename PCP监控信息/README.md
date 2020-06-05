@@ -19,7 +19,7 @@
      
 用pip下载psutil库，s-tui：
      
-     yum install gcc python-devel
+     yum install gcc python-devel python3-pcp 
      pip install psutil s-tui
      
 用yum下载pcp：
