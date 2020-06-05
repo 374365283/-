@@ -2,6 +2,7 @@
 
 ## 部署过程：
 首先安装pip：
+
      yum install wget unzip
      export http_proxy=http://proxy.pi.sjtu.edu.cn:3004/
      export https_proxy=http://proxy.pi.sjtu.edu.cn:3004/
