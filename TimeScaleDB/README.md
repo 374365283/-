@@ -54,11 +54,16 @@
             # Connecting to the new database is as simple as:
             psql -U postgres -h localhost -d tutorial
             
-## Grafana
+## Grafana安装
              
             wget https://dl.grafana.com/oss/release/grafana-7.0.3-1.x86_64.rpm
             yum -y install grafana-7.0.3-1.x86_64.rpm
             systemctl daemon-reload
-            systemctl enable grafana-server.service
             systemctl start grafana-server.service
+            systemctl enable grafana-server.service
+            
+            sudo firewall-cmd --add-port=3000/tcp --permanent
+            sudo firewall-cmd --reload
+            
+ 在浏览器上输入网址：http://172.16.0.160:3000，172.16.0.160是status.pi.sjtu.edu.cn的ip地址，3000是grafana默认的端口号。
             
