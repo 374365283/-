@@ -54,3 +54,11 @@
             # Connecting to the new database is as simple as:
             psql -U postgres -h localhost -d tutorial
             
+## Grafana
+             
+            wget https://dl.grafana.com/oss/release/grafana-7.0.3-1.x86_64.rpm
+            yum -y install grafana-7.0.3-1.x86_64.rpm
+            systemctl daemon-reload
+            systemctl enable grafana-server.service
+            systemctl start grafana-server.service
+            
