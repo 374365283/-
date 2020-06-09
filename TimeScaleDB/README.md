@@ -1,5 +1,6 @@
 #  TimeScaleDB工作记录
-## TimeScaleDB 安装流程(参考文档https://docs.timescale.com/v1.2/getting-started/installation/rhel-centos/installation-yum )：
+## TimeScaleDB 安装流程
+(参考文档https://docs.timescale.com/v1.2/getting-started/installation/rhel-centos/installation-yum )：
             
             yum install -y https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
             tee /etc/yum.repos.d/timescale_timescaledb.repo <<EOL
