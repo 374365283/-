@@ -9,12 +9,15 @@ interval = 5
 name = 'Util'
 database_name = 'tutorial'
 table_name = 'monitor_' + name
-
+user_name = 'postgres'
+password_name = 'postgres'
+host_name = '172.16.0.190'
+port_name = '5432'
 
 #create the database
-def create_table(name,database_name,table_name):
+def create_table(name,database_name,table_name,user_name,password_name,host_name,port_name):
 
-     conn = psycopg2.connect(database=database_name, user="postgres", password="postgres", host="172.16.0.190", port="5432")
+     conn = psycopg2.connect(database=database_name, user=user_name, password=password_name, host=host_name, port=port_name)
      cur = conn.cursor()
      #create the database
 
@@ -35,9 +38,9 @@ def create_table(name,database_name,table_name):
      conn.commit()
 
 #insert the data
-def insert(duration,interval,name,database_name,table_name):
-
-    conn = psycopg2.connect(database=database_name, user="postgres", password="postgres", host="172.16.0.190", port="5432")
+def insert(duration,interval,name,database_name,table_name,user_name,password_name,host_name,port_name):
+    
+    conn = psycopg2.connect(database=database_name, user=user_name, password=password_name, host=host_name, port=port_name)
     cur = conn.cursor()
     
     var = os.popen("s-tui -j").read()
@@ -66,6 +69,5 @@ def insert(duration,interval,name,database_name,table_name):
 
     conn.commit()
 
- 
-#create_table(name,database_name,table_name)
-insert(duration,interval,name,database_name,table_name)
+create_table(name,database_name,table_name,user_name,password_name,host_name,port_name)  
+insert(duration,interval,name,database_name,table_name,user_name,password_name,host_name,port_name)
